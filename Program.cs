@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
-var builder = WebApplication.CreateBuilder(args); 
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -26,6 +26,15 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(opt =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalhostCors", policy =>
+    {
+        policy.SetIsOriginAllowed(origin => origin.Contains("localhost"))
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -62,8 +71,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();   
-    
+    app.MapScalarApiReference();
 }
 
 using (var scope = app.Services.CreateScope())
@@ -82,15 +90,13 @@ using (var scope = app.Services.CreateScope())
 app.UseHttpsRedirection();
 
 app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog API v1");
-});
+app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog API v1"); });
+
+app.UseRouting();
+app.UseCors("LocalhostCors");
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapGroup("Auth").MapIdentityApi<IdentityUser>().WithTags("Auth");
-
-
 
 app.Run();
