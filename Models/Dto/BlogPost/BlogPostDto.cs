@@ -1,0 +1,8 @@
+﻿namespace Blog.Models.Dto.Blog;
+
+public class BlogPostDto
+{
+    public string Title {get;set;}
+    public string Brief { get; set; }
+    public string Content {get;set;}
+}
