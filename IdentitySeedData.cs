@@ -13,13 +13,13 @@ public class IdentitySeedData
         const string adminEmail = "admin@admin.com";
         const string adminPassword = "Admin123!";
 
-        // Rol yoksa oluştur
+    
         if (!await roleManager.RoleExistsAsync(adminRole))
         {
             await roleManager.CreateAsync(new IdentityRole(adminRole));
         }
 
-        // Kullanıcıyı kontrol et
+    
         var adminUser = await userManager.FindByEmailAsync(adminEmail);
         if (adminUser == null)
         {
