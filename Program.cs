@@ -28,9 +28,10 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(opt =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("LocalhostCors", policy =>
+    options.AddPolicy("Cors", policy =>
     {
-        policy.SetIsOriginAllowed(origin => origin.Contains("localhost"))
+        policy
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -68,7 +69,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
@@ -93,7 +94,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog API v1"); });
 
 app.UseRouting();
-app.UseCors("LocalhostCors");
+app.UseCors("Cors");
 app.UseAuthorization();
 
 app.MapControllers();
