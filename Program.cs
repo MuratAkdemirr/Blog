@@ -26,16 +26,16 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>(opt =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Cors", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("Cors", policy =>
+//     {
+//         policy
+//             .AllowAnyOrigin()
+//             .AllowAnyHeader()
+//             .AllowAnyMethod();
+//     });
+// });
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -65,15 +65,12 @@ builder.Services
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
-builder.Services.AddSingleton(TimeProvider.System);
-
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
+
+app.MapOpenApi();
+app.MapScalarApiReference();
+
 
 using (var scope = app.Services.CreateScope())
 {
@@ -93,8 +90,7 @@ app.UseHttpsRedirection();
 app.UseSwagger();
 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog API v1"); });
 
-app.UseRouting();
-app.UseCors("Cors");
+// app.UseCors("Cors")
 app.UseAuthorization();
 
 app.MapControllers();
